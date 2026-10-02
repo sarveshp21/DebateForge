@@ -5,8 +5,18 @@ import time
 
 import pandas as pd
 import streamlit as st
+from streamlit.errors import StreamlitSecretNotFoundError
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+try:
+    for setting in ("LLM_BACKEND", "LLM_MODEL", "OPENAI_API_KEY", "OPENAI_MODEL", "OLLAMA_MODEL"):
+        if setting not in os.environ and setting in st.secrets:
+            os.environ[setting] = str(st.secrets[setting])
+except StreamlitSecretNotFoundError:
+    pass
+
+os.environ.setdefault("LLM_BACKEND", "openai" if os.getenv("OPENAI_API_KEY") else "mock")
 
 from core.config import AppConfig
 from core.debate_engine import MAX_ROUNDS, MIN_ROUNDS, run_debate

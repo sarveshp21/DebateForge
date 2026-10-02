@@ -80,6 +80,22 @@ Start the Streamlit interface:
 streamlit run ui/app.py
 ```
 
+## Deploy on Streamlit Community Cloud
+
+1. Push this project to a GitHub repository. Keep `.streamlit/secrets.toml` and API keys out of the repository.
+2. Open [Streamlit Community Cloud](https://share.streamlit.io/deploy), choose **Create app**, and select the repository and branch.
+3. Set the app file path to `ui/app.py`, then deploy.
+
+The app uses the mock backend when no provider is configured, so the deployed UI can run without an API key. To enable OpenAI, add these values under the app's **Settings → Secrets** before or after deployment:
+
+```toml
+LLM_BACKEND = "openai"
+OPENAI_API_KEY = "your-api-key"
+OPENAI_MODEL = "gpt-4o-mini"
+```
+
+The OpenAI package is included in `requirements.txt`. Ollama requires a separate reachable Ollama service, so the local Ollama backend is not available from Community Cloud by default.
+
 Or start the command-line application:
 
 ```bash
