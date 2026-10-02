@@ -1,0 +1,325 @@
+STEP 1 — Project Setup (Foundation)
+
+1. Create Project Folder
+Open VS Code → Terminal:
+mkdir ai-debate-system
+cd ai-debate-system
+
+2. Open in VS Code: code .
+
+3. Create Virtual Environment: py -3.11 -m venv venv --without-pip
+
+4. Activate Environment: .\venv\Scripts\Activate.ps1
+
+5. Install pip manually:
+python -m ensurepip --upgrade
+python -m pip install --upgrade pip
+
+5. Verify: 
+python --version
+pip --version
+
+6. Create Initial Files & Folders
+Create this structure:
+ai-debate-system/
+│
+├── agents/
+├── core/
+├── utils/
+├── ui/
+├── data/
+│
+├── main.py
+├── requirements.txt
+└── .gitignore
+
+7. Create .gitignore:
+venv/
+__pycache__/
+*.pyc
+.env
+data/*.json
+
+8. Install Basic Dependencies
+For now: pip install streamlit ollama
+
+9. Save Dependencies: pip freeze > requirements.txt
+
+
+STEP 2 — LLM Setup (Ollama + llm.py)
+
+This step will:
+👉 Connect your project to a local LLM (no API needed)
+👉 Create a reusable function for all agents
+
+PART 1 — Install & Setup Ollama
+🔹 1. Install Ollama
+👉 Download from: https://ollama.com/download
+
+2. Verify installation
+Open terminal: ollama --version
+
+3. Pull a model (VERY IMPORTANT)
+Run: ollama pull phi3:mini
+👉 This downloads the model (~2–3GB)
+
+4. Test model
+ollama run phi3:mini
+Type: Hello
+👉 If it responds → ✅ working
+
+PART 2 — Create LLM Utility
+Now we connect this model to Python.
+
+5. Create file: 📁 utils/llm_model/llm.py
+
+PART 3 — Test LLM
+Update main.py
+
+What you just built
+Your App → llm.py → Ollama → Model → Response
+👉 This is the core engine of your entire project
+
+IMPORTANT
+All agents (Pro, Against, Judge) will use: call_llm(prompt)
+
+
+STEP 3 — Pro Agent
+
+This agent will:
+Support the topic
+Generate structured arguments
+Be ready for multi-round + memory + rebuttal (future steps)
+
+1️⃣ main.py → ENTRY POINT
+👉 You start the program here
+
+2️⃣ agents/pro_agent.py → AGENT LOGIC
+👉 This is your AI agent
+
+3️⃣ utils/prompts/pro_prompt.py → INSTRUCTIONS
+👉 What you tell AI to do
+
+4️⃣ utils/llm_model/llm.py → AI CONNECTION
+👉 Talks to Ollama
+send prompt → get response
+
+5️⃣ utils/json_formatter/formatter.py → CLEAN OUTPUT
+👉 Converts AI response → JSON
+
+main.py
+   ↓
+pro_agent.py
+   ↓
+prompts.py
+   ↓
+llm.py (Ollama)
+   ↓
+raw response (text)
+   ↓
+formatter.py
+   ↓
+clean JSON output
+
+
+STEP 4 — Against Agent
+
+This agent will:
+Oppose the topic
+Generate counter arguments
+Follow structured JSON
+Be ready for rebuttal (next steps)
+
+1. Execution starts (main.py)
+
+2. Create Against Agent
+📁 agents/against_agent.py
+
+3. Add Prompt
+📁 Open utils/prompts/againts_prompts.py
+
+4. utils/llm_model/llm.py → AI CONNECTION
+👉 Talks to Ollama
+send prompt → get response
+
+5. utils/json_formatter/formatter.py → CLEAN OUTPUT
+👉 Converts AI response → JSON
+
+Both agents:
+Use same architecture
+Use different prompts
+Produce same structured format
+
+Agents are NOT interacting yet
+Right now:
+Pro Agent → independent
+Against Agent → independent
+❌ No communication
+❌ No rebuttal
+
+Now we will move from:
+Independent Agents ❌ to Interactive Agents ✅
+
+Next Step Preview
+Pro Agent gives argument
+Against Agent READS it
+→ responds (rebuttal)
+👉 That’s where your system becomes intelligent
+
+
+STEP 5 — Debate Engine (Multi-Agent Orchestration)
+
+👉 Goal:
+Connect Pro + Against agents
+Run them in sequence (round-based)
+Prepare for rebuttal + memory (next steps)
+
+WHAT IS DEBATE ENGINE?
+👉 It is the controller of the entire system
+❌ Agents don’t talk directly
+✅ Debate Engine controls everything
+
+FLOW WE ARE BUILDING (PHASE 1)
+Topic
+  ↓
+Pro Agent → arguments
+  ↓
+Against Agent → arguments
+  ↓
+Store results
+👉 (Rebuttal comes in next upgrade)
+
+STEP 5.1 — Create Debate Engine
+📁 core/debate_engine.py
+
+STEP 5.2 — Update main.py
+
+👉 This is:
+✔ Orchestration
+✔ Multi-agent coordination
+✔ Structured system
+
+You have:
+main.py → debate_engine → agents ✅
+👉 This is industry-level architecture
+
+CURRENT LIMITATION (IMPORTANT)
+Right now:
+Pro Agent → does NOT know Against Agent output
+Against Agent → does NOT know Pro output
+👉 No interaction yet ❌
+
+NEXT STEP (BIG UPGRADE)
+
+We will add:
+🔥 Rebuttal Logic
+Pro Agent reads Against arguments → responds
+Against Agent reads Pro arguments → counters
+👉 That’s where:
+✔ Memory
+✔ Real debate
+✔ Intelligence
+
+
+STEP 6 — Rebuttal + Memory
+
+Until now:
+❌ Agents don’t know each other
+Now:
+✅ Agents READ each other’s arguments
+✅ Respond (rebuttal)
+✅ Memory is maintained
+
+STEP 6.1 — Update Prompts (VERY IMPORTANT)
+Add Pro Rebuttal Prompt
+Add Against Rebuttal Prompt
+
+STEP 6.2 — Update Agents (Add Rebuttal Functions)
+📁 agents/pro_agent.py
+📁 agents/against_agent.py
+
+STEP 6.3 — Create Memory Manager
+📁 core/memory_manager.py
+
+STEP 6.4 — Update Debate Engine
+📁 core/debate_engine.py
+
+WHAT YOU JUST BUILT (IMPORTANT)
+Agents → read → think → respond
+👉 This is:
+✔ Multi-agent reasoning
+✔ Context-aware responses
+✔ Real debate behavior
+
+Before:
+Agents = independent ❌
+Now:
+Agents = interacting system ✅
+
+This is NOT memory access like database
+It is: Passing previous output → next agent input
+
+
+STEP 7 — Judge Agent + Scoring System
+
+Add an agent that:
+Reads full debate (opening + rebuttal)
+Evaluates both sides
+Gives scores
+Declares winner
+
+STEP 7.1 — Add Judge Prompt
+📁 utils/prompts.py
+
+STEP 7.2 — Create Judge Agent
+📁 agents/judge_agent.py
+
+STEP 7.3 — Update Debate Engine
+📁 core/debate_engine.py
+
+
+STEP 8 — Streamlit UI (Live Debate Interface)
+
+Create a UI where user can:
+Enter topic
+Run debate
+See:
+Pro arguments
+Against arguments
+Rebuttals
+Judge result
+
+STEP 8.1 — Create UI File
+ui/app.py
+
+Run: streamlit run ui/app.py
+
+but i want the ui such that first the heading of the project at the center, then it will ask the user to enter the debate topic, then the user will select number of rounds between 1 to 10, then start debate button at the center, then below it live debate visuals one by one till is finishes, blue symbol for pro and red symbol for against then at last below the final winner will be displayed. first give me the ui code then we will edit our previous codes
+
+NEW UI (Advanced + Live Debate Style)
+
+WHAT THIS UI DOES
+✅ Centered title
+✅ Topic input
+✅ Round selector (1–10)
+✅ Centered button
+✅ Live debate feel (with delay)
+✅ Color-coded:
+🔵 Pro (blue)
+🔴 Against (red)
+✅ Final winner + reason + scores
+
+
+STEP 9 — Multi-Round Debate Engine (Dynamic Rounds)
+
+👉 Goal:
+Use slider (1–10 rounds)
+Run debate in loop
+Alternate Pro ↔ Against
+Maintain memory across rounds
+
+STEP 9.1 — Update run_debate() to accept rounds
+📁 core/debate_engine.py
+
+STEP 9.2 — Update UI to pass rounds
+📁 ui/app.py

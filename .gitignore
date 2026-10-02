@@ -1,0 +1,6 @@
+# This prevents uploading unnecessary files to GitHub
+venv/
+__pycache__/
+*.pyc
+.env
+data/*.json
